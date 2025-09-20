@@ -5,5 +5,5 @@
     "html_code": "<form method=\"post\">\n    <label for=\"x_months\">Enter the number of past months:</label>\n    <input type=\"number\" name=\"x_months\" id=\"x_months\" min=\"1\" max=\"12\" required><br><br>\n    <button type=\"submit\">Run</button>\n</form>",
     "id": 1758374082712,
     "creation_date": "2025-09-20T13:14:42.712294",
-    "usage_count": 2
+    "usage_count": 3
 }

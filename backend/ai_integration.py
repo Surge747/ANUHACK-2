@@ -7,7 +7,7 @@ def get_widget_code_from_gemini(user_prompt: str, schema: str) -> dict:
     Generates a full Python+HTML widget from a user prompt and database schema.
     Can create widgets for DB queries, plotting, calculations, or image manipulation.
     """
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = ""
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable not set.")
     genai.configure(api_key=api_key)

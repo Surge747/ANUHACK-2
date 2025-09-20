@@ -7,7 +7,7 @@ from . import models
 
 # --- CONFIGURATION ---
 # The single database for application data (members, sales, etc.)
-DATA_DB_FILE = "database/db.db"
+DATA_DB_FILE = "database/widgets.db"
 # Directory to store widget definitions as JSON files
 WIDGETS_DIR = "widgets"
 

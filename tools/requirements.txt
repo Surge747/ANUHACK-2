@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
 pydantic
-# google-generativeai # Uncomment when using the real Gemini API
+google-generativeai # Uncomment when using the real Gemini API
 python-multipart
 markdown # For the mock Markdown widget
