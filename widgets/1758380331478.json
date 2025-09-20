@@ -1,0 +1,9 @@
+{
+    "name": "Open Support Tickets",
+    "category": "graphs",
+    "python_code": "import sqlite3\nimport matplotlib.pyplot as plt\nimport io\nimport base64\nimport pandas as pd\ndef run_widget(inputs: dict) -> str:\n    conn = sqlite3.connect('database/widgets.db')\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT subject FROM support_tickets WHERE status = 'Open'\")\n    rows = cursor.fetchall()\n    conn.close()\n    if not rows:\n        return \"No open support tickets found.\"\n    subjects = [row[0] for row in rows]\n    df = pd.DataFrame({'Subject': subjects, 'Count': [1] * len(subjects)})\n    counts = df.groupby('Subject')['Count'].sum()\n    plt.figure(figsize=(10, 6))\n    counts.plot(kind='bar')\n    plt.title('Open Support Tickets by Subject')\n    plt.xlabel('Subject')\n    plt.ylabel('Number of Tickets')\n    plt.xticks(rotation=45, ha='right')\n    plt.tight_layout()\n    buf = io.BytesIO()\n    plt.savefig(buf, format='png')\n    buf.seek(0)\n    img_str = base64.b64encode(buf.read()).decode()\n    plt.close()\n    return f\"data:image/png;base64,{img_str}\"",
+    "html_code": "<p>This widget displays a bar graph of open support tickets.</p><button type=\"submit\">Run</button>",
+    "id": 1758380331478,
+    "creation_date": "2025-09-20T14:58:51.478514",
+    "usage_count": 3
+}

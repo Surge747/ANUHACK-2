@@ -94,8 +94,148 @@
         .widget-output img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
 
         .marketplace-header { text-align: center; margin-bottom: 40px; }
-        .marketplace-header h1 { font-family: var(--font-display); font-size: 48px; background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--primary-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradient-text-flow 5s ease infinite; }
+        .marketplace-header h1 {
+            font-family: var(--font-display);
+            font-size: 48px;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), #4ac2d3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradient-text-flow 5s ease infinite;
+        }
         .marketplace-header p { font-size: 18px; color: var(--text-muted); margin-top: 10px; }
+
+        .marketplace-section h2 {
+            font-family: var(--font-display);
+            font-size: 28px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .featured-grid, .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .market-card {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .market-card:before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(61, 82, 213, 0.2), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            transform: translate(0, 0);
+            pointer-events: none;
+        }
+
+        .market-card:hover {
+            transform: translateY(-5px);
+        }
+        .market-card:hover:before {
+            opacity: 1;
+            animation: subtle-glow 3s infinite linear;
+        }
+        
+        .market-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .market-card-icon {
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 16px;
+        }
+        .market-card .icon-image { background-color: #3f51b5; }
+        .market-card .icon-numerical { background-color: #f44336; }
+        .market-card .icon-graph { background-color: #4caf50; }
+        .market-card .icon-db { background-color: #ff9800; }
+        
+        .market-card-title h3 { font-family: var(--font-display); font-size: 18px; }
+        .market-card-title span { font-size: 14px; color: var(--text-muted); }
+        .market-card-desc { margin-bottom: 20px; color: var(--text-muted); }
+        .market-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .market-card-downloads i { margin-right: 6px; }
+
+        /* Category Icons */
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 18px;
+            color: white;
+        }
+        .category-icon.image { background-color: #3f51b5; }
+        .category-icon.numerical { background-color: #f44336; }
+        .category-icon.graphs { background-color: #4caf50; }
+        .category-icon.query { background-color: #ff9800; }
+        .category-icon.records { background-color: #9c27b0; }
+
+        /* Enhance mini-app cards with category indicators */
+        .mini-app .category-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+        .mini-app .category-badge.image { background-color: #3f51b5; }
+        .mini-app .category-badge.numerical { background-color: #f44336; }
+        .mini-app .category-badge.graphs { background-color: #4caf50; }
+        .mini-app .category-badge.query { background-color: #ff9800; }
+        .mini-app .category-badge.records { background-color: #9c27b0; }
+
+        /* Update sidebar category links with colored icons */
+        .sidebar-nav-item a.category-link i {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+        .sidebar-nav-item a.category-link[data-category="image"] i { background-color: #3f51b5; }
+        .sidebar-nav-item a.category-link[data-category="numerical"] i { background-color: #f44336; }
+        .sidebar-nav-item a.category-link[data-category="graphs"] i { background-color: #4caf50; }
+        .sidebar-nav-item a.category-link[data-category="query"] i { background-color: #ff9800; }
+        .sidebar-nav-item a.category-link[data-category="records"] i { background-color: #9c27b0; }
+        .sidebar-nav-item a.category-link[data-category="all"] i { 
+            background: linear-gradient(135deg, #3f51b5, #f44336, #4caf50, #ff9800);
+        }
     </style>
 </head>
 <body>
@@ -123,6 +263,7 @@
                     <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="numerical"><i class="fa-solid fa-calculator"></i> Numerical</a></li>
                     <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="graphs"><i class="fa-solid fa-chart-pie"></i> Graphs</a></li>
                     <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="query"><i class="fa-solid fa-search"></i> Query</a></li>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="records"><i class="fa-solid fa-database"></i> Records</a></li>
                 </ul>
             </nav>
         </div>
@@ -144,7 +285,122 @@
             </div>
         </div>
         <div id="page-marketplace" class="page">
-            <div class="marketplace-header"><h1>Widget Marketplace</h1><p>Discover, share, and use powerful widgets created by the community.</p></div>
+            <div class="marketplace-header">
+                <h1>Widget Marketplace</h1>
+                <p>Discover, share, and use powerful widgets created by the community.</p>
+            </div>
+            
+            <div class="marketplace-section">
+                <h2>Featured Widgets</h2>
+                <div class="featured-grid">
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-image"><i class="fa-solid fa-image"></i></div>
+                            <div class="market-card-title">
+                                <h3>Image Enhancer</h3>
+                                <span>By PixelPro</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Automatically enhance and adjust your images with AI-powered filters.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>1.2k</div>
+                            <div class="market-card-rating">★★★★☆</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-numerical"><i class="fa-solid fa-calculator"></i></div>
+                            <div class="market-card-title">
+                                <h3>Advanced Tax Calculator</h3>
+                                <span>By FinTools</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Calculate taxes for multiple countries with up-to-date rates and regulations.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>3.4k</div>
+                            <div class="market-card-rating">★★★★★</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-graph"><i class="fa-solid fa-chart-line"></i></div>
+                            <div class="market-card-title">
+                                <h3>Data Visualizer Pro</h3>
+                                <span>By DataViz</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Transform your CSV data into beautiful interactive charts and graphs.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>2.8k</div>
+                            <div class="market-card-rating">★★★★☆</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="marketplace-section">
+                <h2>Trending Now</h2>
+                <div class="trending-grid">
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-db"><i class="fa-solid fa-database"></i></div>
+                            <div class="market-card-title">
+                                <h3>SQL Query Builder</h3>
+                                <span>By DBMaster</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Build complex SQL queries with an intuitive visual interface.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>5.6k</div>
+                            <div class="market-card-rating">★★★★★</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-numerical"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            <div class="market-card-title">
+                                <h3>Currency Converter</h3>
+                                <span>By ForexTools</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Convert between 170+ currencies with real-time exchange rates.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>4.1k</div>
+                            <div class="market-card-rating">★★★★☆</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card">
+                        <div class="market-card-header">
+                            <div class="market-card-icon icon-image"><i class="fa-solid fa-font"></i></div>
+                            <div class="market-card-title">
+                                <h3>Text to Speech</h3>
+                                <span>By AudioWizard</span>
+                            </div>
+                        </div>
+                        <div class="market-card-desc">
+                            Convert your text to natural-sounding speech in multiple languages.
+                        </div>
+                        <div class="market-card-footer">
+                            <div class="market-card-downloads"><i class="fa-solid fa-download"></i>2.5k</div>
+                            <div class="market-card-rating">★★★★☆</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <div class="expansion-overlay"></div>
@@ -207,7 +463,45 @@
                 app.className = 'mini-app';
                 app.dataset.widgetId = widget.id;
                 app.dataset.category = widget.category;
-                app.innerHTML = `<h3>${widget.name}</h3><p>Category: ${widget.category}</p>`;
+                
+                // Get icon based on category
+                let categoryIcon = '';
+                let categoryName = '';
+                
+                switch(widget.category) {
+                    case 'image':
+                        categoryIcon = 'fa-image';
+                        categoryName = 'Image';
+                        break;
+                    case 'numerical':
+                        categoryIcon = 'fa-calculator';
+                        categoryName = 'Numerical';
+                        break;
+                    case 'graphs':
+                        categoryIcon = 'fa-chart-pie';
+                        categoryName = 'Graphs';
+                        break;
+                    case 'query':
+                        categoryIcon = 'fa-search';
+                        categoryName = 'Query';
+                        break;
+                    case 'records':
+                        categoryIcon = 'fa-database';
+                        categoryName = 'Records';
+                        break;
+                    default:
+                        categoryIcon = 'fa-cube';
+                        categoryName = widget.category;
+                }
+
+                app.innerHTML = `
+                    <div class="category-badge ${widget.category}">${categoryName}</div>
+                    <div class="category-icon ${widget.category}">
+                        <i class="fa-solid ${categoryIcon}"></i>
+                    </div>
+                    <h3>${widget.name}</h3>
+                    <p>Used ${widget.usage_count} time${widget.usage_count !== 1 ? 's' : ''}</p>
+                `;
                 app.addEventListener('click', () => expandApp(app, widget));
                 return app;
             }
@@ -264,7 +558,7 @@
 
                 app.innerHTML += `
                     <button class="close-btn"><i class="fa-solid fa-xmark"></i></button>
-                    <div class="expanded-content">
+                    <div class="expanded-content" data-usage-count="${fullWidget.usage_count}">
                         <h2>${fullWidget.name}</h2>
                         <form class="widget-form" data-widget-id="${fullWidget.id}">
                             ${fullWidget.html_code}
@@ -299,7 +593,51 @@
                     this.removeEventListener('transitionend', onTransitionEnd);
                     this.classList.remove('expanding');
                     this.style.cssText = '';
-                    this.innerHTML = `<h3>${this.querySelector('h2').innerText}</h3><p>Category: ${this.dataset.category}</p>`;
+                    
+                    // Get the widget category and name from the expanded app
+                    const category = this.dataset.category;
+                    const widgetName = this.querySelector('h2').innerText;
+                    const usageCount = this.querySelector('.expanded-content').dataset.usageCount || '0';
+                    
+                    // Recreate the original mini app layout with category icon
+                    let categoryIcon = '';
+                    let categoryName = '';
+                    
+                    switch(category) {
+                        case 'image':
+                            categoryIcon = 'fa-image';
+                            categoryName = 'Image';
+                            break;
+                        case 'numerical':
+                            categoryIcon = 'fa-calculator';
+                            categoryName = 'Numerical';
+                            break;
+                        case 'graphs':
+                            categoryIcon = 'fa-chart-pie';
+                            categoryName = 'Graphs';
+                            break;
+                        case 'query':
+                            categoryIcon = 'fa-search';
+                            categoryName = 'Query';
+                            break;
+                        case 'records':
+                            categoryIcon = 'fa-database';
+                            categoryName = 'Records';
+                            break;
+                        default:
+                            categoryIcon = 'fa-cube';
+                            categoryName = category;
+                    }
+                    
+                    this.innerHTML = `
+                        <div class="category-badge ${category}">${categoryName}</div>
+                        <div class="category-icon ${category}">
+                            <i class="fa-solid ${categoryIcon}"></i>
+                        </div>
+                        <h3>${widgetName}</h3>
+                        <p>Used ${usageCount} time${usageCount !== '1' ? 's' : ''}</p>
+                    `;
+                    
                     originalAppParent.insertBefore(this, placeholder);
                     if (placeholder.parentNode) {
                         originalAppParent.removeChild(placeholder);
