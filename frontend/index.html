@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Widget Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --background-dark: #0D1117;
+            --surface-dark: #161B22;
+            --primary-glow: #22D3EE; /* Cyan */
+            --secondary-glow: #D946EF; /* Magenta */
+            --text-light: #E6EDF3;
+            --text-muted: #8B949E;
+            --border-color: #30363D;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        @keyframes subtle-glow {
+            0% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.3), 0 0 7px rgba(217, 70, 239, 0.2); }
+            50% { box-shadow: 0 0 10px rgba(34, 211, 238, 0.5), 0 0 14px rgba(217, 70, 239, 0.3); }
+            100% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.3), 0 0 7px rgba(217, 70, 239, 0.2); }
+        }
+
+        @keyframes gradient-text-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-main); background-color: var(--background-dark); color: var(--text-light); display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 260px; background-color: var(--surface-dark); border-right: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; z-index: 10; }
+        .main-content { flex-grow: 1; padding: 32px; overflow-y: auto; }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .sidebar-header { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 40px; display: flex; align-items: center; }
+        .sidebar-header i { color: var(--primary-glow); margin-right: 12px; }
+
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav-item a { display: flex; align-items: center; padding: 14px 16px; margin-bottom: 8px; border-radius: 8px; text-decoration: none; color: var(--text-muted); font-weight: 500; transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; position: relative; border: 1px solid transparent; }
+        .sidebar-nav-item a i { margin-right: 16px; width: 20px; text-align: center; }
+        .sidebar-nav-item a:hover { background-color: rgba(22, 27, 34, 0.7); color: var(--text-light); }
+        .sidebar-nav-item a.active { color: white; background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow)); box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+
+        .sidebar-divider { height: 1px; background-color: var(--border-color); margin: 24px 0; }
+        .sidebar-section { display: none; }
+        .sidebar-section.active { display: block; animation: fadeIn 0.4s ease; }
+        .sidebar-section h3 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; padding: 0 16px; }
+
+        #page-create .chat-container { display: flex; flex-direction: column; height: calc(100vh - 100px); }
+        #page-create .chat-history { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        #page-create .chat-message { margin-bottom: 20px; display: flex; max-width: 70%; }
+        #page-create .chat-message.user { justify-content: flex-end; margin-left: auto; }
+        #page-create .chat-bubble { padding: 16px; border-radius: 12px; line-height: 1.6; }
+        #page-create .ai .chat-bubble { background-color: var(--surface-dark); }
+        #page-create .user .chat-bubble { background: linear-gradient(45deg, var(--primary-glow), #4185dd); }
+        #page-create .chat-input-area { display: flex; margin-top: 20px; }
+        #page-create .chat-input { flex-grow: 1; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--surface-dark); color: var(--text-light); font-size: 16px; transition: box-shadow 0.3s; }
+        #page-create .chat-input:focus { outline: none; box-shadow: 0 0 10px rgba(34, 211, 238, 0.6); }
+        #page-create .chat-submit-button { margin-left: 10px; padding: 0 24px; border: none; border-radius: 10px; background-color: var(--primary-glow); color: var(--background-dark); cursor: pointer; font-size: 16px; font-weight: 600; transition: background-color 0.3s; }
+        #page-create .chat-submit-button:hover { background-color: #1bc2d8; }
+
+        #page-minis .minis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
+        .mini-app { aspect-ratio: 1 / 1; background: var(--surface-dark); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s, opacity 0.4s; display: flex; flex-direction: column; }
+        .mini-app.hidden { transform: scale(0.9); opacity: 0; pointer-events: none; }
+        .mini-app:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .mini-app h3 { font-family: var(--font-display); }
+        .mini-app p { color: var(--text-muted); margin-top: 10px; }
+
+        .expansion-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 17, 23, 0.5); backdrop-filter: blur(8px); z-index: 1000; opacity: 0; transition: opacity 0.4s ease; pointer-events: none;}
+        .expansion-overlay.visible { opacity: 1; pointer-events: all; }
+
+        .mini-app.expanding { position: fixed !important; z-index: 1001; cursor: default; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mini-app.expanded { top: 50% !important; left: 50% !important; width: 80vw !important; height: 75vh !important; max-width: 1000px; transform: translate(-50%, -50%); padding: 40px; display: flex; flex-direction: column; }
+
+        .expanded-content { opacity: 0; transition: opacity 0.3s 0.2s ease; margin-top: 20px; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .mini-app.expanded .expanded-content { opacity: 1; }
+
+        .close-btn { position: absolute; top: 15px; right: 15px; width: 30px; height: 30px; background: rgba(0,0,0,0.3); color: var(--text-light); border: none; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s 0.2s ease; }
+        .mini-app.expanded .close-btn { opacity: 1; }
+
+        .widget-output { margin-top: 1rem; padding: 1rem; background-color: var(--background-dark); border-radius: 8px; border: 1px solid var(--border-color); min-height: 50px; white-space: pre-wrap; word-wrap: break-word; flex-grow: 1; overflow-y: auto; }
+        .widget-output img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
+
+        .marketplace-header { text-align: center; margin-bottom: 40px; }
+        .marketplace-header h1 { font-family: var(--font-display); font-size: 48px; background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--primary-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradient-text-flow 5s ease infinite; }
+        .marketplace-header p { font-size: 18px; color: var(--text-muted); margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-bolt-lightning"></i><span>AI Widgets</span></div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="sidebar-nav-item"><a href="#" class="nav-link active" data-page="page-create"><i class="fa-solid fa-wand-magic-sparkles"></i> Create</a></li>
+                <li class="sidebar-nav-item"><a href="#" class="nav-link" data-page="page-minis"><i class="fa-solid fa-th-large"></i> Minis</a></li>
+                <li class="sidebar-nav-item"><a href="#" class="nav-link" data-page="page-marketplace"><i class="fa-solid fa-store"></i> Marketplace</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-divider"></div>
+        <div id="sidebar-create" class="sidebar-section active">
+            <h3>Previous Chats</h3>
+            <nav class="sidebar-nav"><ul><li class="sidebar-nav-item"><a href="#"><i class="fa-solid fa-comment-dots"></i> USD to EUR Converter</a></li></ul></nav>
+        </div>
+        <div id="sidebar-minis" class="sidebar-section">
+            <h3>Categories</h3>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link active" data-category="all"><i class="fa-solid fa-asterisk"></i> All Minis</a></li>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="image"><i class="fa-solid fa-image"></i> Image</a></li>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="numerical"><i class="fa-solid fa-calculator"></i> Numerical</a></li>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="graphs"><i class="fa-solid fa-chart-pie"></i> Graphs</a></li>
+                    <li class="sidebar-nav-item"><a href="#" class="category-link" data-category="query"><i class="fa-solid fa-search"></i> Query</a></li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div id="page-create" class="page active">
+            <div class="chat-container">
+                <div class="chat-history"><div class="chat-message ai"><div class="chat-bubble">Describe the widget you need. Examples: "Show all platinum members", "A simple sales tax calculator", "Create a bar chart of total sales per member", "Add a title to the top of an uploaded image".</div></div></div>
+                <form id="chat-form" class="chat-input-area">
+                    <input type="text" name="prompt" class="chat-input" placeholder="e.g., 'A widget to convert Markdown to HTML'" required>
+                    <button type="submit" class="chat-submit-button"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div id="page-minis" class="page">
+            <div id="minis-grid" class="minis-grid">
+                <!-- Widgets will be loaded here by JavaScript -->
+            </div>
+        </div>
+        <div id="page-marketplace" class="page">
+            <div class="marketplace-header"><h1>Widget Marketplace</h1><p>Discover, share, and use powerful widgets created by the community.</p></div>
+        </div>
+    </main>
+    <div class="expansion-overlay"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiBaseUrl = 'http://127.0.0.1:8000';
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            const sidebarSections = document.querySelectorAll('.sidebar-section');
+            const minisGrid = document.getElementById('minis-grid');
+            const chatForm = document.getElementById('chat-form');
+            const chatHistory = document.querySelector('.chat-history');
+            const overlay = document.querySelector('.expansion-overlay');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const targetPageId = link.getAttribute('data-page');
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    pages.forEach(p => p.classList.toggle('active', p.id === targetPageId));
+                    const targetSidebarId = 'sidebar-' + targetPageId.split('-')[1];
+                    sidebarSections.forEach(s => s.classList.toggle('active', s.id === targetSidebarId));
+
+                    if (targetPageId === 'page-minis') {
+                        loadAllWidgets();
+                    }
+                });
+            });
+
+            async function loadAllWidgets() {
+                try {
+                    minisGrid.innerHTML = '<p>Loading widgets...</p>';
+                    const response = await fetch(`${apiBaseUrl}/get_widgets`);
+                    if (!response.ok) throw new Error(`Failed to fetch widgets. Status: ${response.status}`);
+                    const widgets = await response.json();
+                    minisGrid.innerHTML = '';
+
+                    // *** MODIFICATION START ***
+                    // Handle case where there are no widgets
+                    if (widgets.length === 0) {
+                        minisGrid.innerHTML = `<p style="color: var(--text-muted);">You haven't created any widgets yet. Go to the "Create" page to build your first one!</p>`;
+                        return; // Stop execution here
+                    }
+                    // *** MODIFICATION END ***
+
+                    widgets.forEach(widget => {
+                        const widgetEl = createWidgetDOMElement(widget);
+                        minisGrid.appendChild(widgetEl);
+                    });
+                } catch (error) {
+                    minisGrid.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                }
+            }
+
+            function createWidgetDOMElement(widget) {
+                const app = document.createElement('div');
+                app.className = 'mini-app';
+                app.dataset.widgetId = widget.id;
+                app.dataset.category = widget.category;
+                app.innerHTML = `<h3>${widget.name}</h3><p>Category: ${widget.category}</p>`;
+                app.addEventListener('click', () => expandApp(app, widget));
+                return app;
+            }
+
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const promptInput = this.querySelector('input[name="prompt"]');
+                const prompt = promptInput.value.trim();
+                if (!prompt) return;
+
+                addMessageToChat('user', prompt);
+                addMessageToChat('ai', 'Generating widget, please wait...');
+                promptInput.value = '';
+
+                try {
+                    const response = await fetch(`${apiBaseUrl}/generate_widget`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.detail || 'Failed to generate.');
+                    addMessageToChat('ai', `Successfully created the "${result.name}" widget! You can find it on the Minis page.`);
+                } catch (error) {
+                    addMessageToChat('ai', `Error: ${error.message}`);
+                }
+            });
+
+            function addMessageToChat(sender, text) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `chat-message ${sender}`;
+                msgDiv.innerHTML = `<div class="chat-bubble">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+                chatHistory.appendChild(msgDiv);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            let expandedApp = null;
+            let originalAppParent = null;
+            let placeholder = null;
+
+            async function expandApp(app, widgetData) {
+                if (expandedApp) return;
+                expandedApp = app;
+                originalAppParent = app.parentElement;
+                const appRect = app.getBoundingClientRect();
+
+                placeholder = document.createElement('div');
+                placeholder.style.width = `${appRect.width}px`;
+                placeholder.style.height = `${appRect.height}px`;
+                originalAppParent.insertBefore(placeholder, app);
+
+                const response = await fetch(`${apiBaseUrl}/get_widget/${widgetData.id}`);
+                const fullWidget = await response.json();
+
+                app.innerHTML += `
+                    <button class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="expanded-content">
+                        <h2>${fullWidget.name}</h2>
+                        <form class="widget-form" data-widget-id="${fullWidget.id}">
+                            ${fullWidget.html_code}
+                        </form>
+                        <div class="widget-output" id="output-${fullWidget.id}">Result will be shown here.</div>
+                    </div>`;
+
+                app.querySelector('.close-btn').onclick = (e) => { e.stopPropagation(); closeExpandedApp(); };
+                app.querySelector('.widget-form').onsubmit = handleRunWidget;
+
+                app.style.top = `${appRect.top}px`;
+                app.style.left = `${appRect.left}px`;
+                app.style.width = `${appRect.width}px`;
+                app.style.height = `${appRect.height}px`;
+
+                document.body.appendChild(app);
+                app.classList.add('expanding');
+                overlay.classList.add('visible');
+                requestAnimationFrame(() => app.classList.add('expanded'));
+            }
+
+            function closeExpandedApp() {
+                if (!expandedApp) return;
+                const placeholderRect = placeholder.getBoundingClientRect();
+                expandedApp.classList.remove('expanded');
+                overlay.classList.remove('visible');
+                expandedApp.style.top = `${placeholderRect.top}px`;
+                expandedApp.style.left = `${placeholderRect.left}px`;
+                expandedApp.style.width = `${placeholderRect.width}px`;
+                expandedApp.style.height = `${placeholderRect.height}px`;
+                expandedApp.addEventListener('transitionend', function onTransitionEnd() {
+                    this.removeEventListener('transitionend', onTransitionEnd);
+                    this.classList.remove('expanding');
+                    this.style.cssText = '';
+                    this.innerHTML = `<h3>${this.querySelector('h2').innerText}</h3><p>Category: ${this.dataset.category}</p>`;
+                    originalAppParent.insertBefore(this, placeholder);
+                    if (placeholder.parentNode) {
+                        originalAppParent.removeChild(placeholder);
+                    }
+                    expandedApp = null;
+                    placeholder = null;
+                }, { once: true });
+            }
+
+            async function handleRunWidget(e) {
+                e.preventDefault();
+                const form = e.target;
+                const widgetId = form.dataset.widgetId;
+                const outputDiv = document.getElementById(`output-${widgetId}`);
+                outputDiv.innerHTML = 'Running...';
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(`${apiBaseUrl}/run_widget/${widgetId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.error) {
+                         throw new Error(result.error);
+                    }
+                    const output = result.output || "No output received.";
+                    if (output.startsWith('data:image/')) {
+                        outputDiv.innerHTML = `<img src="${output}" alt="Generated Output">`;
+                        outputDiv.style.whiteSpace = 'normal';
+                    } else {
+                        outputDiv.textContent = output;
+                        outputDiv.style.whiteSpace = 'pre-wrap';
+                    }
+                } catch (error) {
+                    outputDiv.textContent = `Error: ${error.message}`;
+                }
+            }
+
+            overlay.addEventListener('click', closeExpandedApp);
+
+            const categoryLinks = document.querySelectorAll('.category-link');
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    categoryLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetCategory = link.dataset.category;
+                    document.querySelectorAll('.mini-app').forEach(app => {
+                        const appCategory = app.dataset.category;
+                        app.classList.toggle('hidden', !(targetCategory === 'all' || appCategory === targetCategory));
+                    });
+                });
+            });
+
+            loadAllWidgets();
+        });
+    </script>
+</body>
+</html>

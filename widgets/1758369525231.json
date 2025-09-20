@@ -1,0 +1,9 @@
+{
+    "name": "Number Multiplier",
+    "category": "numerical",
+    "python_code": "def run_widget(inputs: dict) -> str:\n    try:\n        number = float(inputs['number'])\n        multiplier = float(inputs.get('multiplier', 1))\n        result = number * multiplier\n        return f\"Result: {result}\"\n    except (ValueError, KeyError):\n        return \"Invalid input. Please enter a valid number.\"",
+    "html_code": "<form method=\"post\">\n    <label for=\"number\">Enter a number:</label>\n    <input type=\"number\" id=\"number\" name=\"number\" required><br><br>\n    <label for=\"multiplier\">Enter a multiplier (optional, defaults to 1):</label>\n    <input type=\"number\" id=\"multiplier\" name=\"multiplier\">\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758369525231,
+    "creation_date": "2025-09-20T11:58:45.231007",
+    "usage_count": 1
+}

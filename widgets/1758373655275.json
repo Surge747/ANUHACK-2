@@ -1,0 +1,9 @@
+{
+    "name": "Sales Forecast",
+    "category": "graphs",
+    "python_code": "import sqlite3\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport io\nimport base64\n\ndef run_widget(inputs: dict) -> str:\n    try:\n        x = int(inputs['months'])\n    except (KeyError, ValueError):\n        return \"Invalid input for months.\"\n\n    conn = sqlite3.connect('database/widgets.db')\n    sales_df = pd.read_sql_query(\"SELECT sale_date, total_price FROM sales\", conn)\n    conn.close()\n\n    sales_df['sale_date'] = pd.to_datetime(sales_df['sale_date'])\n    sales_df = sales_df.set_index('sale_date')\n    sales_df = sales_df.resample('M').sum()\n\n    forecast = sales_df['total_price'].copy()\n    forecast = forecast.append(pd.Series(index=pd.date_range(start=forecast.index[-1] + pd.DateOffset(months=1), periods=x, freq='M'), data=forecast.rolling(window=3).mean().iloc[-1]))\n\n    plt.figure(figsize=(10, 6))\n    plt.plot(forecast)\n    plt.title('Sales Forecast for the Next {} Months'.format(x))\n    plt.xlabel('Month')\n    plt.ylabel('Total Sales')\n    plt.grid(True)\n    \n    buf = io.BytesIO()\n    plt.savefig(buf, format='png')\n    buf.seek(0)\n    img_base64 = base64.b64encode(buf.read()).decode('utf-8')\n    plt.close()\n    \n    return f\"data:image/png;base64,{img_base64}\"\n",
+    "html_code": "<form method=\"post\">\n    <label for=\"months\">Number of Months to Forecast:</label>\n    <input type=\"number\" id=\"months\" name=\"months\" min=\"1\" required>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758373655275,
+    "creation_date": "2025-09-20T13:07:35.275786",
+    "usage_count": 0
+}

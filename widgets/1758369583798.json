@@ -1,0 +1,9 @@
+{
+    "name": "Membership Trends",
+    "category": "graphs",
+    "python_code": "import matplotlib.pyplot as plt\nimport pandas as pd\nimport sqlite3\nimport io\nimport base64\n\ndef run_widget(inputs: dict) -> str:\n    conn = sqlite3.connect('database/widgets.db')\n    query = \"SELECT T1.tier_name, COUNT(T2.member_id) AS member_count FROM membership_tiers T1 LEFT JOIN members T2 ON T1.tier_id = T2.membership_tier_id GROUP BY T1.tier_name\"\n    df = pd.read_sql_query(query, conn)\n    conn.close()\n\n    plt.figure(figsize=(10, 6))\n    plt.bar(df['tier_name'], df['member_count'])\n    plt.xlabel('Membership Tier')\n    plt.ylabel('Number of Members')\n    plt.title('Members per Tier')\n    \n    img = io.BytesIO()\n    plt.savefig(img, format='png')\n    img.seek(0)\n    base64_string = base64.b64encode(img.getvalue()).decode()\n    return f\"data:image/png;base64,{base64_string}\"",
+    "html_code": "<form method=\"post\">\n    <p>Click Run to generate the plot.</p>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758369583798,
+    "creation_date": "2025-09-20T11:59:43.798521",
+    "usage_count": 1
+}

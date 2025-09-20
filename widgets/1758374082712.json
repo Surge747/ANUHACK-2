@@ -1,0 +1,9 @@
+{
+    "name": "Past X Months Sales Graph",
+    "category": "graphs",
+    "python_code": "import matplotlib.pyplot as plt\nimport pandas as pd\nimport sqlite3\nimport io\nimport base64\n\ndef run_widget(inputs: dict) -> str:\n    try:\n        x_months = int(inputs['x_months'])\n    except (KeyError, ValueError):\n        return \"Invalid input. Please enter a valid number of months.\"\n\n    try:\n        conn = sqlite3.connect('database/widgets.db')\n        query = f\"SELECT SUM(total_price), STRFTIME('%Y-%m', sale_date) AS sales_month FROM sales GROUP BY sales_month ORDER BY sales_month DESC LIMIT {x_months}\"\n        df = pd.read_sql_query(query, conn)\n        conn.close()\n    except sqlite3.Error as e:\n        return f\"Database error: {e}\"\n\n    if df.empty:\n        return \"No sales data found for the selected period.\"\n\n    df.columns = ['Total Sales', 'Month']\n    plt.figure(figsize=(10, 6))\n    plt.bar(df['Month'], df['Total Sales'])\n    plt.xlabel('Month')\n    plt.ylabel('Total Sales')\n    plt.title(f'Total Sales for the Past {x_months} Months')\n    plt.xticks(rotation=45, ha='right')\n    plt.tight_layout()\n\n    img = io.BytesIO()\n    plt.savefig(img, format='png')\n    img.seek(0)\n    plot_url = base64.b64encode(img.getvalue()).decode()\n    return f\"data:image/png;base64,{plot_url}\"\n",
+    "html_code": "<form method=\"post\">\n    <label for=\"x_months\">Enter the number of past months:</label>\n    <input type=\"number\" name=\"x_months\" id=\"x_months\" min=\"1\" max=\"12\" required><br><br>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758374082712,
+    "creation_date": "2025-09-20T13:14:42.712294",
+    "usage_count": 2
+}

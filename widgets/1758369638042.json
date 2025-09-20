@@ -1,0 +1,9 @@
+{
+    "name": "Add Green Banner and Title",
+    "category": "image",
+    "python_code": "from PIL import Image, ImageDraw, ImageFont\nimport base64\nimport io\n\ndef run_widget(inputs: dict) -> str:\n    try:\n        image_path = inputs['user_image']\n        image = Image.open(image_path)\n        width, height = image.size\n\n        # Add green banner\n        banner_height = 50\n        banner = Image.new('RGB', (width, banner_height), color = 'green')\n        image = Image.alpha_composite(image, banner)\n\n        # Add title\n        draw = ImageDraw.Draw(image)\n        title = \"My Awesome Image\"\n        font = ImageFont.load_default()\n        text_width, text_height = draw.textsize(title, font=font)\n        x = (width - text_width) / 2\n        y = 10\n        draw.text((x, y), title, font=font, fill='white')\n\n        # Convert to Base64\n        buffered = io.BytesIO()\n        image.save(buffered, format=\"PNG\")\n        img_str = base64.b64encode(buffered.getvalue()).decode()\n        return f\"data:image/png;base64,{img_str}\"\n    except Exception as e:\n        return f\"Error: {str(e)}\"",
+    "html_code": "<form method=\"post\" enctype=\"multipart/form-data\">\n    <input type=\"file\" name=\"user_image\" required>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758369638042,
+    "creation_date": "2025-09-20T12:00:38.042979",
+    "usage_count": 5
+}

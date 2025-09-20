@@ -1,0 +1,9 @@
+{
+    "name": "Sales Total Calculator",
+    "category": "numerical",
+    "python_code": "def run_widget(inputs: dict) -> str:\n    try:\n        total = sum(float(inputs[f'sale_{i}']) for i in range(1, 6))\n        return f\"Total sales: ${total:.2f}\"\n    except (KeyError, ValueError):\n        return \"Invalid input. Please enter 5 numbers.\"",
+    "html_code": "<form method=\"post\">\n    <label for=\"sale_1\">Sale 1:</label><input type=\"number\" id=\"sale_1\" name=\"sale_1\" required><br>\n    <label for=\"sale_2\">Sale 2:</label><input type=\"number\" id=\"sale_2\" name=\"sale_2\" required><br>\n    <label for=\"sale_3\">Sale 3:</label><input type=\"number\" id=\"sale_3\" name=\"sale_3\" required><br>\n    <label for=\"sale_4\">Sale 4:</label><input type=\"number\" id=\"sale_4\" name=\"sale_4\" required><br>\n    <label for=\"sale_5\">Sale 5:</label><input type=\"number\" id=\"sale_5\" name=\"sale_5\" required><br>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758369853395,
+    "creation_date": "2025-09-20T12:04:13.395444",
+    "usage_count": 0
+}

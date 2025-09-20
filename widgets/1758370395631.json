@@ -1,0 +1,9 @@
+{
+    "name": "Member Age Distribution",
+    "category": "graphs",
+    "python_code": "import sqlite3\nimport matplotlib.pyplot as plt\nimport io\nimport base64\nimport pandas as pd\ndef run_widget(inputs: dict) -> str:\n    conn = sqlite3.connect('database/widgets.db')\n    df = pd.read_sql_query(\"SELECT date_of_birth FROM members\", conn)\n    conn.close()\n    df['date_of_birth'] = pd.to_datetime(df['date_of_birth'])\n    df['age'] = (pd.to_datetime('today') - df['date_of_birth']).dt.days // 365.25\n    df['age_group'] = pd.cut(df['age'], bins=[0, 18, 35, 65, 1000], labels=['0-18', '19-35', '36-65', '65+'])\n    age_counts = df['age_group'].value_counts()\n    plt.figure(figsize=(8, 6))\n    age_counts.plot(kind='bar')\n    plt.xlabel('Age Group')\n    plt.ylabel('Number of Members')\n    plt.title('Distribution of Member Age Groups')\n    img = io.BytesIO()\n    plt.savefig(img, format='png')\n    img.seek(0)\n    plot_url = base64.b64encode(img.getvalue()).decode()\n    return f\"data:image/png;base64,{plot_url}\"",
+    "html_code": "<p>This widget shows the age distribution of members.</p><button type=\"submit\">Run</button>",
+    "id": 1758370395631,
+    "creation_date": "2025-09-20T12:13:15.631247",
+    "usage_count": 1
+}

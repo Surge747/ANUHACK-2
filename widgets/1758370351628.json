@@ -1,0 +1,9 @@
+{
+    "name": "Schema Retriever",
+    "category": "query",
+    "python_code": "import sqlite3\nimport json\ndef run_widget(inputs: dict) -> str:\n    conn = sqlite3.connect('database/widgets.db')\n    cursor = conn.cursor()\n\n    cursor.execute(\"SELECT name FROM sqlite_master WHERE type='table';\")\n    tables = cursor.fetchall()\n\n    schema_info = {}\n    for table_name in tables:\n        table_name = table_name[0]\n        cursor.execute(f\"PRAGMA table_info({table_name});\")\n        columns = cursor.fetchall()\n        schema_info[table_name] = [{'name': col[1], 'type': col[2]} for col in columns]\n    \n    conn.close()\n    return json.dumps(schema_info, indent=4)",
+    "html_code": "<p>Click Run to see the database schema.</p><button type=\"submit\">Run</button>",
+    "id": 1758370351628,
+    "creation_date": "2025-09-20T12:12:31.628669",
+    "usage_count": 2
+}

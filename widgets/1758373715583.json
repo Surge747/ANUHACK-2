@@ -1,0 +1,9 @@
+{
+    "name": "Sales Forecast",
+    "category": "graphs",
+    "python_code": "import matplotlib.pyplot as plt\nimport pandas as pd\nimport base64\nfrom io import BytesIO\n\ndef run_widget(inputs: dict) -> str:\n    try:\n        # Replace this with your actual sales data retrieval logic\n        #  This example uses dummy data for demonstration\n        data = {'Month': ['December 2023', 'January 2024', 'February 2024'],\n                'Sales': [15000, 18000, 20000]}\n        df = pd.DataFrame(data)\n\n        plt.figure(figsize=(10, 6))\n        plt.plot(df['Month'], df['Sales'], marker='o', linestyle='-')\n        plt.xlabel('Month')\n        plt.ylabel('Sales')\n        plt.title('Sales Forecast for the Next Two Months')\n        plt.grid(True)\n\n        # Save the plot to a BytesIO object\n        img = BytesIO()\n        plt.savefig(img, format='png')\n        img.seek(0)\n        \n        # Encode the plot as a base64 string\n        plot_url = base64.b64encode(img.getvalue()).decode()\n        return f\"data:image/png;base64,{plot_url}\"\n    except Exception as e:\n        return f\"Error generating plot: {e}\"",
+    "html_code": "<form method=\"post\">\n    <p>This widget displays a sales forecast for the next two months.</p>\n    <button type=\"submit\">Run</button>\n</form>",
+    "id": 1758373715583,
+    "creation_date": "2025-09-20T13:08:35.583306",
+    "usage_count": 2
+}
